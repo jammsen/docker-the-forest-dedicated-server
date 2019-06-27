@@ -25,12 +25,11 @@ RUN apt-get remove -y software-properties-common apt-transport-https cabextract 
     && rm -rf winetricks /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
     && echo $TIMEZONE > /etc/timezone \
-    && chmod +x entrypoint.sh /usr/bin/steamcmdinstaller.sh usr/bin/servermanager.sh \
+    && chmod +x /usr/bin/steamcmdinstaller.sh usr/bin/servermanager.sh \
     && cd /usr/bin
 
 EXPOSE 8766/tcp 8766/udp 27015/tcp 27015/udp 27016/tcp 27016/udp
 
 VOLUME ["/theforest", "/steamcmd"]
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["supervisord"]
