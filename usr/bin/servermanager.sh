@@ -96,7 +96,7 @@ function startServer() {
     fi
 
     if isServerRunning; then
-        echo ">> INFO: Server is already running, skipping start"
+        echo ">> INFO: Server running, skipping start"
         return
     else
         # supervisor start
@@ -115,7 +115,7 @@ function startMainLoop() {
         fi
 
         startServer
-        sleep 30
+        sleep 600
     done
 }
 

@@ -25,8 +25,7 @@ RUN apt-get remove -y software-properties-common apt-transport-https cabextract 
     && rm -rf winetricks /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
     && echo $TIMEZONE > /etc/timezone \
-    && chmod +x /usr/bin/steamcmdinstaller.sh usr/bin/servermanager.sh \
-    && cd /usr/bin
+    && chmod +x /usr/bin/steamcmdinstaller.sh usr/bin/servermanager.sh
 
 EXPOSE 8766/tcp 8766/udp 27015/tcp 27015/udp 27016/tcp 27016/udp
 

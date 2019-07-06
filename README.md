@@ -19,6 +19,7 @@ docker run --rm -i -t -p 8766:8766/tcp -p 8766:8766/udp -p 27015:27015/tcp -p 27
 ## Planned features in the future
 * Automated checks for updates based on SteamCMD in a given interval 
 * Automated updates based on checks
+* ~~Wrapper around the render server error~~
 
 ## Software used
 * Ubuntu 18.04 LTS
