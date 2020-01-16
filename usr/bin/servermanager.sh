@@ -102,6 +102,7 @@ function startServer() {
         # supervisor start
         supervisorctl status theforestServer | grep RUNNING > /dev/null
         if [[ $? != 0 ]]; then
+            rm /tmp/.X1-lock
             supervisorctl start theforestServer
         fi
     fi
