@@ -1,4 +1,4 @@
-## Docker - TheForest Fedicated Server
+## Docker - TheForest Dedicated Server
 This includes a TheForest Dedicated Server based on Docker with Wine and an example config.
 
 ## What you need to run this
