@@ -22,11 +22,10 @@ docker run --rm -i -t -p 8766:8766/tcp -p 8766:8766/udp -p 27015:27015/tcp -p 27
 * ~~Wrapper around the render server error~~
 
 ## Software used
-* Ubuntu 18.04 LTS
+* Debian Slim Stable
 * Supervisor
 * Xvfb
 * Winbind
-* Wine from WineHQ
-* Winetricks from GitHub
+* Wine
 * SteamCMD
 * TheForest Dedicated Server

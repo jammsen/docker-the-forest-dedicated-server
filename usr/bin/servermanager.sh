@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # SteamCMD APPID for the-forest-dedicated-server
-STEAMCMD_APPID=242760
 SAVEGAME_PATH="/theforest/saves/"
 CONFIG_PATH="/theforest/config/"
 CONFIGFILE_PATH="/theforest/config/config.cfg"
@@ -116,7 +115,7 @@ function startMainLoop() {
         fi
 
         startServer
-        sleep 600
+        sleep 900
     done
 }
 
