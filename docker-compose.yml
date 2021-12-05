@@ -1,16 +1,16 @@
 version: "3.7"
-  services:
-    the-forest-dedicated-server:
-      container_name: the-forest-dedicated-server
-      image: jammsen/the-forest-dedicated-server:latest
-      restart: always
-      ports:
-        - 8766:8766/tcp
-        - 8766:8766/udp
-        - 27015:27015/tcp
-        - 27015:27015/udp
-        - 27016:27016/tcp
-        - 27016:27016/udp
-      volumes:
-        - /srv/tfds/steamcmd:/steamcmd
-        - /srv/tfds/game:/theforest
+services:
+  the-forest-dedicated-server:
+    container_name: the-forest-dedicated-server
+    image: jammsen/the-forest-dedicated-server:latest
+    restart: always
+    ports:
+      - 8766:8766/tcp
+      - 8766:8766/udp
+      - 27015:27015/tcp
+      - 27015:27015/udp
+      - 27016:27016/tcp
+      - 27016:27016/udp
+    volumes:
+      - /srv/tfds/steamcmd:/steamcmd
+      - /srv/tfds/game:/theforest
