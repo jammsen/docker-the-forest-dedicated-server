@@ -8,7 +8,7 @@ serverGamePort 27015
 // Query Communication Port - Note: If you have a router you will need to open this port.
 serverQueryPort 27016
 // Server display name
-serverName jammsen-docker-generated
+serverName jammsen-docker-generated-##RANDOM##
 // Maximum number of players
 serverPlayers 8
 // Enable VAC (Valve Anti-cheat System at the server. Must be set off or on
@@ -18,7 +18,7 @@ serverPassword
 // Server administration password. blank means no password
 serverPasswordAdmin
 // Your Steam account name. blank means anonymous
-serverSteamAccount
+serverSteamAccount ###serverSteamAccount###
 // Time between server auto saves in minutes - The minumum time is 15 minutes, the default time is 30
 serverAutoSaveInterval 30
 // Game difficulty mode. Must be set to Peaceful Normal or Hard

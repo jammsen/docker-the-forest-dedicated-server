@@ -21,18 +21,17 @@ function isVirtualScreenRunning() {
     fi
 }
 
-# TODO - finish autoupdater
-#function prepareUpdateServer() {
-#    if isServerRunning; then
-#        stopServer
-#    fi
-#    sleep 10
-#    updateServer
-#}
-
 function setupWineInBashRc() {
     echo "Setting up Wine in bashrc"
+    mkdir -p /winedata/WINE64
+    if [ ! -d /winedata/WINE64/drive_c/windows ]; then
+      cd /winedata
+      echo "Setting up WineConfig and waiting 15 seconds"
+      winecfg > /dev/null 2>&1
+      sleep 15
+    fi
     cat >> /etc/bash.bashrc <<EOF
+export WINEPREFIX=/winedata/WINE64
 export WINEARCH=win64
 export DISPLAY=:1.0
 EOF
@@ -48,75 +47,40 @@ function isWineinBashRcExistent() {
 
 function startVirtualScreenAndRebootWine() {
     # Start X Window Virtual Framebuffer
+    export WINEPREFIX=/winedata/WINE64
     export WINEARCH=win64
     export DISPLAY=:1.0
     Xvfb :1 -screen 0 1024x768x24 &
     wineboot -r
 }
 
-function performServerUpdate() {
-    supervisorctl status theforestUpdate | grep RUNNING > /dev/null
-    if [[ $? != 0 ]]; then
-        supervisorctl start theforestUpdate
-    fi
-}
-
-function manageServerUpdate() {
-    if [[ $1 == 1 ]]; then
-        # force a fresh install of all
-        isWineinBashRcExistent
-        steamcmdinstaller.sh
-        mkdir -p $SAVEGAME_PATH $CONFIG_PATH
-        cp /server.cfg.example $CONFIGFILE_PATH
-        sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" $CONFIGFILE_PATH
-        performServerUpdate
-    else
-        stopServer
-        sleep 60
-        performServerUpdate
-    fi
-
-    # wait for update to be finished
-    while $(supervisorctl status theforestUpdate | grep RUNNING > /dev/null); do
-        sleep 1
-    done
-
-    startServer
-}
-
-function stopServer() {
-    # supervisor stop
-    supervisorctl stop theforestUpdate
+function installServer() {
+    # force a fresh install of all
+    isWineinBashRcExistent
+    steamcmdinstaller.sh
+    mkdir -p $SAVEGAME_PATH $CONFIG_PATH
+    cp /server.cfg.example $CONFIGFILE_PATH
+    sed -i -e "s/##serverSteamAccount##/$SERVER_STEAM_ACCOUNT_TOKEN/g" $CONFIGFILE_PATH
+    sed -i -e "s/##RANDOM##/$RANDOM/g" $CONFIGFILE_PATH
+    sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" $CONFIGFILE_PATH
+    bash /steamcmd/steamcmd.sh +runscript /steamcmdinstall.txt
 }
 
 function startServer() {
     if ! isVirtualScreenRunning; then
         startVirtualScreenAndRebootWine
     fi
+    rm /tmp/.X1-lock 2> /dev/null
+    cd /theforest
+    wine64 /theforest/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath /theforest/saves -configfilepath /theforest/config/config.cfg
+}
 
-    if isServerRunning; then
-        echo ">> INFO: Server running, skipping start"
-        return
-    else
-        # supervisor start
-        supervisorctl status theforestServer | grep RUNNING > /dev/null
-        if [[ $? != 0 ]]; then
-            rm /tmp/.X1-lock
-            supervisorctl start theforestServer
-        fi
+function startMain() {
+    # Check if server is installed, if not try again
+    if [ ! -f "/theforest/TheForestDedicatedServer.exe" ]; then
+        installServer
     fi
+    startServer
 }
 
-function startMainLoop() {
-    while true; do
-        # Check if server is installed, if not try again
-        if [ ! -f "/theforest/TheForestDedicatedServer.exe" ]; then
-            manageServerUpdate 1
-        fi
-
-        startServer
-        sleep 900
-    done
-}
-
-startMainLoop
+startMain
