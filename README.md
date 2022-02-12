@@ -34,9 +34,6 @@ services:
       - 27015:27015/udp
       - 27016:27016/tcp
       - 27016:27016/udp
-    volumes:
-      - /srv/tfds/steamcmd:/steamcmd
-      - /srv/tfds/game:/theforest
 ```
 
 ## Planned features in the future
