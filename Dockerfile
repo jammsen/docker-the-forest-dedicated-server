@@ -11,7 +11,7 @@ ENV WINEPREFIX=/winedata/WINE64 \
     PGID=0 \
     SERVER_STEAM_ACCOUNT_TOKEN=""
 
-VOLUME ["/theforest", "/steamcmd"]
+VOLUME ["/theforest", "/steamcmd", "/winedata"]
 
 EXPOSE 8766/tcp 8766/udp 27015/tcp 27015/udp 27016/tcp 27016/udp
 

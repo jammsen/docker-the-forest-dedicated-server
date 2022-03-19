@@ -35,8 +35,9 @@ services:
       - 27016:27016/tcp
       - 27016:27016/udp
     volumes:
-      - /srv/tfds/steamcmd:/steamcmd
-      - /srv/tfds/game:/theforest
+      - ./steamcmd:/steamcmd
+      - ./game:/theforest
+      - ./winedata:/winedata
 ```
 
 ## Planned features in the future

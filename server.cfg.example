@@ -8,7 +8,7 @@ serverGamePort 27015
 // Query Communication Port - Note: If you have a router you will need to open this port.
 serverQueryPort 27016
 // Server display name
-serverName jammsen-docker-generated-##RANDOM##
+serverName jammsen-docker-generated-###RANDOM###
 // Maximum number of players
 serverPlayers 8
 // Enable VAC (Valve Anti-cheat System at the server. Must be set off or on

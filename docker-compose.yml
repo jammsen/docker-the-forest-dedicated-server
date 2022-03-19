@@ -4,6 +4,8 @@ services:
     container_name: the-forest-dedicated-server
     image: jammsen/the-forest-dedicated-server:latest
     restart: always
+    environment:
+      SERVER_STEAM_ACCOUNT_TOKEN: YOUR_TOKEN_HERE
     ports:
       - 8766:8766/tcp
       - 8766:8766/udp
@@ -11,6 +13,7 @@ services:
       - 27015:27015/udp
       - 27016:27016/tcp
       - 27016:27016/udp
-#    volumes:
-#      - /srv/tfds/steamcmd:/steamcmd
-#      - /srv/tfds/game:/theforest
+    volumes:
+      - ./steamcmd:/steamcmd
+      - ./game:/theforest
+      - ./winedata:/winedata
