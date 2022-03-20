@@ -16,6 +16,7 @@ kaniko:
       --destination "jammsen/the-forest-dedicated-server:${CI_COMMIT_SHORT_SHA}"
       --no-push
       --tarPath image.tar
+    - ls -al image.tar
   artifacts:
     paths:
       - image.tar
