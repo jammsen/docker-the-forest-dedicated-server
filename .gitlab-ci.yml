@@ -9,17 +9,10 @@ kaniko:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${DOCKER_HUB_URL}\":{\"auth\":\"$(printf "%s:%s" "${DOCKER_HUB_USERNAME}" "${DOCKER_HUB_TOKEN}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "jammsen/the-forest-dedicated-server:${CI_COMMIT_SHORT_SHA}"
-      --no-push
-      --tarPath image.tar
-    - ls -al image.tar
-  artifacts:
-    paths:
-      - image.tar
-    expire_in: 1 day
-
- 
+      --destination "jammsen/server2:${CI_COMMIT_SHORT_SHA}"
