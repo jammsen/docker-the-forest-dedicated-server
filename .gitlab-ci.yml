@@ -1,7 +1,7 @@
 stages:
   - build
 
-kaniko:
+kaniko_to_dev:
   stage: build
   tags:
     - docker
@@ -16,3 +16,20 @@ kaniko:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --destination "jammsen/server2:${CI_COMMIT_SHORT_SHA}"
+
+kaniko_to_prod:
+  stage: build
+  tags:
+    - docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${DOCKER_HUB_URL}\":{\"auth\":\"$(printf "%s:%s" "${DOCKER_HUB_USERNAME}" "${DOCKER_HUB_TOKEN}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "jammsen/the-forest-dedicated-server:${CI_COMMIT_SHORT_SHA}"
+  when: manual
