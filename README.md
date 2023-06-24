@@ -1,6 +1,10 @@
 ## Docker - TheForest Dedicated Server
 This includes a TheForest Dedicated Server based on Docker with Wine and an example config.
 
+## Docker - Sons of the Forest Dedicated Server
+If you are looking for the Sons of the Forest version, please look here: 
+https://github.com/jammsen/docker-sons-of-the-forest-dedicated-server
+
 ## What you need to run this
 * Basic understanding of Linux and Docker
 
