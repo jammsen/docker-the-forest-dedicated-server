@@ -9,7 +9,8 @@ ENV WINEPREFIX=/winedata/WINE64 \
     DEBIAN_FRONTEND=noninteractive \
     PUID=0 \
     PGID=0 \
-    SERVER_STEAM_ACCOUNT_TOKEN=""
+    SERVER_STEAM_ACCOUNT_TOKEN="" \
+    ALWAYS_UPDATE_ON_START=1
 
 VOLUME ["/theforest", "/steamcmd", "/winedata"]
 

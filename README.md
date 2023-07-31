@@ -31,6 +31,7 @@ services:
     restart: always
     environment:
       SERVER_STEAM_ACCOUNT_TOKEN: YOUR_TOKEN_HERE
+      ALWAYS_UPDATE_ON_START: 1
     ports:
       - 8766:8766/tcp
       - 8766:8766/udp

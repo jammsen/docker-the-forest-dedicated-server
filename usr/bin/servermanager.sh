@@ -66,6 +66,12 @@ function installServer() {
     bash /steamcmd/steamcmd.sh +runscript /steamcmdinstall.txt
 }
 
+function updateServer() {
+    # force an update and validation
+    echo ">>> Doing an update of the gameserver"
+    bash /steamcmd/steamcmd.sh +runscript /steamcmdinstall.txt
+}
+
 function startServer() {
     if ! isVirtualScreenRunning; then
         startVirtualScreenAndRebootWine
@@ -79,6 +85,9 @@ function startMain() {
     # Check if server is installed, if not try again
     if [ ! -f "/theforest/TheForestDedicatedServer.exe" ]; then
         installServer
+    fi
+    if [ $ALWAYS_UPDATE_ON_START == 1 ]; then
+        updateServer
     fi
     startServer
 }
