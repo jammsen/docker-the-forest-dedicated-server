@@ -1,4 +1,4 @@
-FROM jammsen/base:wine-stable-debian-bullseye
+FROM jammsen/base:wine-stable-debian-bookworm
 
 LABEL maintainer="Sebastian Schmidt"
 
@@ -18,12 +18,12 @@ EXPOSE 8766/tcp 8766/udp 27015/tcp 27015/udp 27016/tcp 27016/udp
 
 RUN dpkg --add-architecture i386 \
     && apt-get update \
-    && apt-get dist-upgrade -y \
-#    && apt-get install -y --no-install-recommends --no-install-suggests lib32gcc-s1 nano supervisor winbind xvfb \
-    && apt-get install -y --no-install-recommends --no-install-suggests lib32gcc-s1 nano winbind xvfb \
+    && apt-get install -y --no-install-recommends --no-install-suggests lib32gcc-s1 winbind xvfb \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY . ./
+COPY ./usr/bin/servermanager.sh /usr/bin/servermanager.sh
+COPY ./usr/bin/steamcmdinstaller.sh /usr/bin/steamcmdinstaller.sh
+COPY server.cfg.example steamcmdinstall.txt /
 
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
     && echo $TIMEZONE > /etc/timezone \

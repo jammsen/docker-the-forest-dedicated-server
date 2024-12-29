@@ -22,11 +22,11 @@ function isVirtualScreenRunning() {
 }
 
 function setupWineInBashRc() {
-    echo "Setting up Wine in bashrc"
+    echo "> Setting up Wine in bashrc"
     mkdir -p /winedata/WINE64
     if [ ! -d /winedata/WINE64/drive_c/windows ]; then
       cd /winedata
-      echo "Setting up WineConfig and waiting 15 seconds"
+      echo "> Setting up WineConfig and waiting 15 seconds"
       winecfg > /dev/null 2>&1
       sleep 15
     fi
@@ -40,7 +40,7 @@ EOF
 function isWineinBashRcExistent() {
     grep "wine" /etc/bash.bashrc > /dev/null
     if [[ $? -ne 0 ]]; then
-        echo "Checking if Wine is set in bashrc"
+        echo "> Checking if Wine is set in bashrc"
         setupWineInBashRc
     fi
 }
@@ -55,13 +55,16 @@ function startVirtualScreenAndRebootWine() {
 }
 
 function installServer() {
+    RANDOM_NUMBER=$RANDOM
     # force a fresh install of all
+    echo ">>> Forcing a fresh server install"
+    echo "> Setting server-name to jammsen-docker-generated-$RANDOM_NUMBER"
     isWineinBashRcExistent
     steamcmdinstaller.sh
     mkdir -p $SAVEGAME_PATH $CONFIG_PATH
     cp /server.cfg.example $CONFIGFILE_PATH
     sed -i -e "s/###serverSteamAccount###/$SERVER_STEAM_ACCOUNT_TOKEN/g" $CONFIGFILE_PATH
-    sed -i -e "s/###RANDOM###/$RANDOM/g" $CONFIGFILE_PATH
+    sed -i -e "s/###RANDOM###/$RANDOM_NUMBER/g" $CONFIGFILE_PATH
     sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" $CONFIGFILE_PATH
     bash /steamcmd/steamcmd.sh +runscript /steamcmdinstall.txt
 }
