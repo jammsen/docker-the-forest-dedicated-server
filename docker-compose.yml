@@ -1,19 +1,17 @@
-version: "3.7"
+version: "3.9"
 services:
   the-forest-dedicated-server:
     container_name: the-forest-dedicated-server
     image: jammsen/the-forest-dedicated-server:latest
     restart: always
     environment:
+      PUID: 1000
+      PGID: 1000
+      ALWAYS_UPDATE_ON_START: true
       SERVER_STEAM_ACCOUNT_TOKEN: YOUR_TOKEN_HERE
     ports:
-      - 8766:8766/tcp
       - 8766:8766/udp
-      - 27015:27015/tcp
       - 27015:27015/udp
-      - 27016:27016/tcp
       - 27016:27016/udp
     volumes:
-      - ./steamcmd:/steamcmd
       - ./game:/theforest
-      - ./winedata:/winedata

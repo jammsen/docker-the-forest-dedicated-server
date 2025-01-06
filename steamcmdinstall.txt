@@ -1,5 +1,0 @@
-@sSteamCmdForcePlatformType windows
-force_install_dir /theforest
-login anonymous
-app_update 556450 validate
-quit
