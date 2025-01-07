@@ -1,6 +1,6 @@
 # Docker - TheForest Dedicated Server
 
-[![Build-Status master](https://github.com/jammsen/docker-the-forest-dedicated-server/blob/master/.github/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/jammsen/docker-the-forest-dedicated-server/blob/master/.github/workflows/docker-build-and-push.yml)
+[![Build-Status master](https://github.com/jammsen/docker-the-forest-dedicated-server/blob/master/.github/workflows/docker-build-and-push-prod.yml/badge.svg)](https://github.com/jammsen/docker-the-forest-dedicated-server/blob/master/.github/workflows/docker-build-and-push-prod.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/jammsen/the-forest-dedicated-server)
 ![Docker Stars](https://img.shields.io/docker/stars/jammsen/the-forest-dedicated-server)
 ![Image Size](https://img.shields.io/docker/image-size/jammsen/the-forest-dedicated-server/latest)
@@ -11,59 +11,78 @@
 >
 > **[Join us on Discord](https://discord.gg/7tacb9Q6tj)**
 
-This includes a TheForest Dedicated Server based on Docker with Wine and an example config.
+> [!WARNING]  
+> Update Jan-2025: This Docker-Image had a major refactoring including breaking changes in downwards-compability. This was done for removing dependency of "root" in the image, which caused various SteamCMD, NAS, QNAP, Synology and Portainer problems. Also the Docker-Base-Image was switched and there was better process-handling added to make sure the process exits cleanly, no matter how Docker or the User stops the server.
+>
+> It is recommended to do a fresh install, via the new readme in a fresh directory to understand what changed and work backwards to adapt the changes, or migrate the savegame from the old server to the new one, up to you. If you need help, feel free to join the Discord server and ask in the right channel for the game. 
 
-## Docker - Sons of the Forest Dedicated Server
-If you are looking for the Sons of the Forest version, please look here: 
-https://github.com/jammsen/docker-sons-of-the-forest-dedicated-server
+> [!NOTE]  
+> If you are looking for the Sons of the Forest version, please look here: https://github.com/jammsen/docker-sons-of-the-forest-dedicated-server
+
+## What is included?
+
+This repository includes a TheForest Dedicated Server based on Docker with Wine and an example config.
+
+## Do you need support for this Docker-Image?
+
+- What to do?
+  - Feel free to create a NEW issue
+    - It is okay to "reference" that you might have the same problem as the person in issue #number
+  - Follow the instructions and answer the questions of people who are willing to help you
+  - If your issue is done, close it
+    - I will Inactivity-Close any issue thats not been active for a week
+- What NOT to do?
+  - Dont re-use issues!
+    - You are most likely to chat/spam/harrass thoose participants who didnt agree to be part of your / a new problem and might be totally out of context!
+  - If this happens, i reserve the rights to lock the issue or delete the comments, you have been warned!
 
 ## What you need to run this
-* Basic understanding of Linux and Docker
+* Basic understanding of Docker, Docker Compose, Linux and Networking (Port-Forwarding/NAT)
 
 ## Getting started
 WARNING: If you dont do Step 1 and 2 your server can/will not save!
 1. Create a new game server account over at https://steamcommunity.com/dev/managegameservers (Use AppID: `242760`)
 2. Insert the Login Token into the environment variable via docker-run or docker-compose (at `SERVER_STEAM_ACCOUNT_TOKEN`)
-3. Create 2 directories on your Dockernode (`/srv/tfds/steamcmd` and `/srv/tfds/game`)
-4. Start the container with the following examples:
+3. Go to the directory you want to host your gameserver on your Dockernode
+4. Create a sub-directory called `game`
+5. Download the [docker-compose.yml](docker-compose.yml) or use the following example
+6. Review the file and setup the settings you like
+7. Setup Port-Forwarding or NAT for the ports in the Docker-Compose file
+8. Start the container via Docker Compose
+9. (Tip: Extended config settings, which are not covered by Docker Compose, can be setup in the config-file of the server - You can find it at `game/config/config.cfg`)
 
-Bash:
-```console
-docker run --rm -i -t -e 'SERVER_STEAM_ACCOUNT_TOKEN=YOUR_TOKEN_HERE' -p 8766:8766/tcp -p 8766:8766/udp -p 27015:27015/tcp -p 27015:27015/udp -p 27016:27016/tcp -p 27016:27016/udp -v /srv/tfds/steamcmd:/steamcmd -v /srv/tfds/game:/theforest --name the-forest-dedicated-server jammsen/the-forest-dedicated-server:latest
-or
-docker run --rm -i -t -e 'SERVER_STEAM_ACCOUNT_TOKEN=YOUR_TOKEN_HERE' -p 8766:8766/tcp -p 8766:8766/udp -p 27015:27015/tcp -p 27015:27015/udp -p 27016:27016/tcp -p 27016:27016/udp -v $(pwd)/theforest/steamcmd:/steamcmd -v $(pwd)/theforest/game:/theforest --name the-forest-dedicated-server jammsen/the-forest-dedicated-server:latest
-```
-Docker-Compose:
+### Docker-Compose - Example
+
 ```yaml
-version: "3.7"
+version: "3.9"
 services:
   the-forest-dedicated-server:
     container_name: the-forest-dedicated-server
     image: jammsen/the-forest-dedicated-server:latest
     restart: always
     environment:
+      PUID: 1000
+      PGID: 1000
+      ALWAYS_UPDATE_ON_START: true
       SERVER_STEAM_ACCOUNT_TOKEN: YOUR_TOKEN_HERE
-      ALWAYS_UPDATE_ON_START: 1
     ports:
-      - 8766:8766/tcp
       - 8766:8766/udp
-      - 27015:27015/tcp
       - 27015:27015/udp
-      - 27016:27016/tcp
       - 27016:27016/udp
     volumes:
-      - ./steamcmd:/steamcmd
       - ./game:/theforest
-      - ./winedata:/winedata
 ```
 
 ## Planned features in the future
-Nothing yet
+
+- Feel free to suggest features in the issues
 
 ## Software used
-* Debian Slim Stable
-* Xvfb
-* Winbind
-* Wine
-* SteamCMD
-* TheForest Dedicated Server
+
+- Debian Stable and SteamCMD via cm2network/steamcmd:root image as base-image
+- gosu
+- procps
+- winbind
+- wine
+- xvfb
+* TheForest Dedicated Server (APP-ID: 556450)

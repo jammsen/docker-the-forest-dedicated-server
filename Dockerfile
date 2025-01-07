@@ -1,32 +1,67 @@
-FROM jammsen/base:wine-stable-debian-bookworm
+FROM cm2network/steamcmd:root AS wine-base
 
-LABEL maintainer="Sebastian Schmidt"
-
-ENV WINEPREFIX=/winedata/WINE64 \
-    WINEARCH=win64 \
-    DISPLAY=:1.0 \
-    TIMEZONE=Europe/Berlin \
-    DEBIAN_FRONTEND=noninteractive \
-    PUID=0 \
-    PGID=0 \
-    SERVER_STEAM_ACCOUNT_TOKEN="" \
-    ALWAYS_UPDATE_ON_START=1
-
-VOLUME ["/theforest", "/steamcmd", "/winedata"]
-
-EXPOSE 8766/tcp 8766/udp 27015/tcp 27015/udp 27016/tcp 27016/udp
-
-RUN dpkg --add-architecture i386 \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests lib32gcc-s1 winbind xvfb \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-COPY ./usr/bin/servermanager.sh /usr/bin/servermanager.sh
-COPY ./usr/bin/steamcmdinstaller.sh /usr/bin/steamcmdinstaller.sh
-COPY server.cfg.example steamcmdinstall.txt /
+ENV DEBIAN_FRONTEND=noninteractive \ 
+    # Path-vars
+    WINEPREFIX=/wine \
+    # Container-settings
+    TIMEZONE=Europe/Berlin
 
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
     && echo $TIMEZONE > /etc/timezone \
-    && chmod +x /usr/bin/steamcmdinstaller.sh /usr/bin/servermanager.sh
+    && dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests software-properties-common apt-transport-https gnupg2 wget procps winbind xvfb \
+    && mkdir -pm755 /etc/apt/keyrings \
+    && wget --output-document /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
+    && wget --timestamping --directory-prefix=/etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests winehq-stable \
+    && apt-get remove -y --purge software-properties-common apt-transport-https gnupg2 wget \
+    && apt-get clean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-CMD ["servermanager.sh"]
+FROM wine-base AS gameserver
+
+LABEL maintainer="Sebastian Schmidt - https://github.com/jammsen/docker-the-forest-dedicated-server"
+LABEL org.opencontainers.image.authors="Sebastian Schmidt"
+LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-the-forest-dedicated-server"
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    # Path-vars
+    GAME_PATH="/theforest" \
+    GAME_SAVEGAME_PATH="/theforest/saves" \
+    GAME_CONFIG_PATH="/theforest/config" \
+    GAME_CONFIGFILE_PATH="/theforest/config/config.cfg" \
+    STEAMCMD_PATH="/home/steam/steamcmd" \
+    WINEDATA_PATH="/winedata" \
+    # Wine/Xvfb-settings
+    WINEARCH=win64 \
+    WINEPREFIX="/winedata/WINE64" \
+    DISPLAY=:1.0 \
+    # Container-settings
+    TIMEZONE=Europe/Berlin \
+    PUID=1000 \
+    PGID=1000 \
+    # SteamCMD-settings
+    ALWAYS_UPDATE_ON_START=true \
+    # Gameserver-start-settings-overrides
+    SERVER_STEAM_ACCOUNT_TOKEN="" 
+
+VOLUME ["${GAME_PATH}", "${STEAMCMD_PATH}", "${WINEDATA_PATH}"]
+
+EXPOSE 8766/udp 27015/udp 27016/udp
+
+COPY --chmod=755 entrypoint.sh /
+COPY --chmod=755 scripts/ /scripts
+COPY --chmod=755 includes/ /includes
+COPY --chmod=644 configs/server.cfg.example /
+COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
+
+RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
+    && echo $TIMEZONE > /etc/timezone 
+
+ENTRYPOINT  ["/entrypoint.sh"]
+CMD ["/scripts/servermanager.sh"]
