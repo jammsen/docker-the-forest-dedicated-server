@@ -133,7 +133,7 @@ do
     startMain &
     START_MAIN_PID="$!"
 
-    ei ">>> Server main thread started with pid ${START_MAIN_PID}"
+    ew ">>> Server main thread started with pid ${START_MAIN_PID}"
     wait ${START_MAIN_PID}
     exit 0;
 done
