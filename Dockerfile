@@ -50,7 +50,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # Gameserver-start-settings-overrides
     SERVER_STEAM_ACCOUNT_TOKEN="" 
 
-VOLUME ["${GAME_PATH}", "${STEAMCMD_PATH}", "${WINEDATA_PATH}"]
+VOLUME ["${GAME_PATH}"]
 
 EXPOSE 8766/udp 27015/udp 27016/udp
 
@@ -61,7 +61,8 @@ COPY --chmod=644 configs/server.cfg.example /
 COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
-    && echo $TIMEZONE > /etc/timezone 
+    && echo $TIMEZONE > /etc/timezone \
+    && mkdir -p ${WINEPREFIX}
 
 ENTRYPOINT  ["/entrypoint.sh"]
 CMD ["/scripts/servermanager.sh"]
