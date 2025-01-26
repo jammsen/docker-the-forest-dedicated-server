@@ -1,10 +1,12 @@
 ---
 name: Unit-test
-on:  
-  push:            # Triggers the workflow on every commit to any branch
+on:
+  push:
     branches:
-      - '**'       
-  pull_request:    # Triggers the workflow on every pull request
+      - develop      # Run tests on commit to the develop branch
+      - master       # Run tests on commit to the master branch
+  pull_request:      # Run tests on all pull requests
+  workflow_call:     # Allow this workflow to be called by other workflows
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.ref }}'
@@ -47,6 +49,9 @@ jobs:
             TIMEOUT_SECONDS=180
             START_TIME=$(date +%s)
 
+            # Set the timezone to Germany (Central European Time)
+            export TZ=Europe/Berlin
+
             while ! docker logs the-forest-dedicated-server 2>&1 | grep -q "Game autosave started"; do
               CURRENT_TIME=$(date +%s)
               ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
@@ -58,7 +63,7 @@ jobs:
                 exit 1
               fi
 
-              echo "Waiting for server to start..."
+              echo "$(date '+%H:%M:%S') - Waiting for server to start..."
               sleep 5
             done
 
