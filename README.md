@@ -19,27 +19,57 @@
 > [!NOTE]  
 > If you are looking for the Sons of the Forest version, please look here: https://github.com/jammsen/docker-sons-of-the-forest-dedicated-server
 
-## What is included?
-
 This repository includes a TheForest Dedicated Server based on Docker with Wine and an example config.
 
-## Do you need support for this Docker-Image?
+___
 
-- What to do?
-  - Feel free to create a NEW issue
-    - It is okay to "reference" that you might have the same problem as the person in issue #number
-  - Follow the instructions and answer the questions of people who are willing to help you
-  - If your issue is done, close it
-    - I will Inactivity-Close any issue thats not been active for a week
-- What NOT to do?
-  - Dont re-use issues!
-    - You are most likely to chat/spam/harrass thoose participants who didnt agree to be part of your / a new problem and might be totally out of context!
-  - If this happens, i reserve the rights to lock the issue or delete the comments, you have been warned!
+## Table of Contents
 
-## What you need to run this
-* Basic understanding of Docker, Docker Compose, Linux and Networking (Port-Forwarding/NAT)
+- [Docker - TheForest Dedicated Server](#docker---theforest-dedicated-server)
+  - [Table of Contents](#table-of-contents)
+  - [How to ask for support for this Docker image](#how-to-ask-for-support-for-this-docker-image)
+  - [Requirements](#requirements)
+  - [Minimum system requirements](#minimum-system-requirements)
+  - [Changelog](#changelog)
+  - [Getting started](#getting-started)
+    - [Docker-Compose - Example](#docker-compose---example)
+  - [Planned features in the future](#planned-features-in-the-future)
+  - [Software used](#software-used)
+
+
+## How to ask for support for this Docker image
+
+If you need support for this Docker image:
+
+- Feel free to create a new issue.
+  - You can reference other issues if you're experiencing a similar problem via #issue-number.
+- Follow the instructions and answer the questions of people who are willing to help you.
+- Once your issue is resolved, please close it and please consider giving this repo and the [Docker-Hub repository](https://hub.docker.com/repository/docker/jammsen/the-forest-dedicated-server) a star.
+- Please note that any issue that has been inactive for a week will be closed due to inactivity.
+
+Please avoid:
+
+- Reusing or necroing issues. This can lead to spam and may harass participants who didn't agree to be part of your new problem.
+- If this happens, we reserve the right to lock the issue or delete the comments, you have been warned!
+
+## Requirements
+
+To run this Docker image, you need a basic understanding of Docker, Docker-Compose, Linux, and Networking (Port-Forwarding/NAT).
+
+## Minimum system requirements
+
+| Resource | Minimum (2-4 Players)   | Recommended (4 Players) |
+| -------- | ----------------------- | ----------------------- |
+| CPU      | 2-4 CPU-Cores @ Mid GHz | 4+ CPU Cores @ High GHz |
+| RAM      | 4GB+ RAM                | 8GB+ RAM                |
+| Storage  | 10GB+                   | 20GB+ (SSD prefered)    |
+
+## Changelog
+
+You can find the [changelog here](CHANGELOG.md)
 
 ## Getting started
+
 WARNING: If you dont do Step 1 and 2 your server can/will not save!
 1. Create a new game server account over at https://steamcommunity.com/dev/managegameservers (Use AppID: `242760`)
 2. Insert the Login Token into the environment variable via docker-run or docker-compose (at `SERVER_STEAM_ACCOUNT_TOKEN`)
