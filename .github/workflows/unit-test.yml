@@ -37,7 +37,7 @@ jobs:
             --name the-forest-dedicated-server \
             -p 8766:8766/udp \
             -p 27015:27015/udp \
-            -p 27016:27016/tcp \
+            -p 27016:27016/udp \
             -v ./game:/theforest/ \
             --env SERVER_STEAM_ACCOUNT_TOKEN=${{ secrets.SERVER_STEAM_ACCOUNT_TOKEN }} \
             --restart unless-stopped \
@@ -46,7 +46,7 @@ jobs:
 
       - name: Wait for server to start
         run: |
-            TIMEOUT_SECONDS=180
+            TIMEOUT_SECONDS=240
             START_TIME=$(date +%s)
 
             # Set the timezone to Germany (Central European Time)
