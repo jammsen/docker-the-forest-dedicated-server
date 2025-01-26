@@ -1,8 +1,10 @@
 ---
 name: Unit-test
 on:  
-  pull_request:
-  workflow_call:
+  push:            # Triggers the workflow on every commit to any branch
+    branches:
+      - '**'       
+  pull_request:    # Triggers the workflow on every pull request
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.ref }}'
