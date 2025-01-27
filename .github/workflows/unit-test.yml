@@ -17,6 +17,14 @@ jobs:
     name: Docker - Test Linux-amd64 image
     runs-on: ubuntu-latest
     steps:
+      - name: Get Runner Info
+        run: |
+            id
+            pwd
+            git --version
+            docker version
+            echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -30,7 +38,7 @@ jobs:
           load: true
           tags: ${{ github.run_id }}
           platforms: linux/amd64
-
+  
       - name: Run server
         run: |
             docker run -d \
@@ -46,7 +54,6 @@ jobs:
 
       - name: Wait for server to start
         run: |
-            TIMEOUT_SECONDS=240
             START_TIME=$(date +%s)
 
             # Set the timezone to Germany (Central European Time)
@@ -56,8 +63,8 @@ jobs:
               CURRENT_TIME=$(date +%s)
               ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
 
-              if [ $ELAPSED_TIME -gt $TIMEOUT_SECONDS ]; then
-                echo "Timeout reached. Server failed to start within $TIMEOUT_SECONDS seconds."
+              if [ $ELAPSED_TIME -gt ${{ vars.TIMEOUT_SECONDS }} ]; then
+                echo "Timeout reached. Server failed to start within ${{ vars.TIMEOUT_SECONDS }} seconds."
                 printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
                 docker logs the-forest-dedicated-server
                 exit 1
