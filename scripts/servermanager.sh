@@ -63,13 +63,14 @@ function installServer() {
     isWineinBashRcExistent
     mkdir -p "$GAME_SAVEGAME_PATH" "$GAME_CONFIG_PATH"
 
-    # # only copy dedicatedserver.cfg if doesn't exist
-    # This should be able to be removed, as the server.cfg is now copied from the template
+    # only copy dedicatedserver.cfg if doesn't exist
+    #This should be able to be removed, as the server.cfg is now copied from the template
     # if [[ ! -f "$GAME_CONFIGFILE_PATH" ]]; then
-    #     cp /server.cfg.example "$GAME_CONFIGFILE_PATH"
-    #     sed -i -e "s/###serverSteamAccount###/$SERVER_STEAM_ACCOUNT_TOKEN/g" "$GAME_CONFIGFILE_PATH"
-    #     sed -i -e "s/###RANDOM###/$RANDOM_NUMBER/g" "$GAME_CONFIGFILE_PATH"
-    #     sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
+        # cp /server.cfg.example "$GAME_CONFIGFILE_PATH"
+        # sed -i -e "s/###serverSteamAccount###/$SERVER_STEAM_ACCOUNT_TOKEN/g" "$GAME_CONFIGFILE_PATH"
+        # RANDOM_NUMBER=$RANDOM
+        # sed -i -e "s/###RANDOM###/$RANDOM_NUMBER/g" "$GAME_CONFIGFILE_PATH"
+        # sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
     # fi
 
     "${STEAMCMD_PATH}"/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit

@@ -14,21 +14,23 @@ function e_with_counter() {
 }
 
 function setup_server_cfg() {
-    ei ">>> Setting up server.cfg ..."
+    ei ">>> Setting up config.cfg ..."
     if [ ! -d "${GAME_CONFIG_PATH}" ]; then
         mkdir -p "${GAME_CONFIG_PATH}/"
     fi
     # Copy default-config, which comes with SteamCMD to gameserver save location
-    ew "> Copying server.cfg.example to ${GAME_CONFIGFILE_PATH}"
-    cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+    ew "> Copying server.cfg.template to ${GAME_CONFIGFILE_PATH}"
+    #cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+    cp "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+    sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
 
     if [[ -n ${ADMIN_PASSWORD+x} ]]; then
         e_with_counter "serverPasswordAdmin to '$ADMIN_PASSWORD'"
-        sed -E -i "s/^serverPasswordAdmin.*$/serverPasswordAdmin $ADMIN_PASSWORD/" "$GAME_CONFIGFILE_PATH"
+        sed -E -i "s/^serverPasswordAdmin\b.*$/serverPasswordAdmin $ADMIN_PASSWORD/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_PASSWORD+x} ]]; then
         e_with_counter "serverPassword to '$SERVER_PASSWORD'"
-        sed -E -i "s/^serverPassword.*$/serverPassword $SERVER_PASSWORD/" "$GAME_CONFIGFILE_PATH"
+        sed -E -i "s/^serverPassword ([^A].*|$)/serverPassword $SERVER_PASSWORD/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_STEAM_ACCOUNT_TOKEN+x} ]]; then
         e_with_counter "serverSteamAccount to '$SERVER_STEAM_ACCOUNT_TOKEN'"
@@ -44,7 +46,7 @@ function setup_server_cfg() {
             e "> Server name is now 'jammsen-docker-generated-$RAND_VALUE'"
         fi
     fi
-    es ">>> Finished setting up server.cfg"
+    es ">>> Finished setting up config.cfg"
     cat "${GAME_CONFIGFILE_PATH}"
 }
 
