@@ -23,6 +23,8 @@ jobs:
             pwd
             git --version
             docker version
+            free -m
+            cat /proc/cpuinfo | grep "model name"
             echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
 
       - name: Checkout
