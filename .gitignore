@@ -1,4 +1,8 @@
 .idea/
+.vscode/
 game/
+test/
 steamcmd/
 winedata/
+docker-compose-*.yml
+custom.env

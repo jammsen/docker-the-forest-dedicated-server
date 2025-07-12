@@ -8,6 +8,8 @@
 #set -x
 
 source /includes/colors.sh
+source /includes/config.sh
+source /includes/security.sh
 
 START_MAIN_PID=
 
@@ -54,7 +56,6 @@ function startVirtualScreenAndRebootWine() {
 }
 
 function installServer() {
-    RANDOM_NUMBER=$RANDOM
     # force a fresh install of all
     ei ">>> Doing a fresh install of the gameserver"
     ei "> Setting server-name to jammsen-docker-generated-$RANDOM_NUMBER"
@@ -62,13 +63,14 @@ function installServer() {
     isWineinBashRcExistent
     mkdir -p "$GAME_SAVEGAME_PATH" "$GAME_CONFIG_PATH"
 
-    # only copy dedicatedserver.cfg if doesn't exist
-    if [[ ! -f "$GAME_CONFIGFILE_PATH" ]]; then
-        cp /server.cfg.example "$GAME_CONFIGFILE_PATH"
-        sed -i -e "s/###serverSteamAccount###/$SERVER_STEAM_ACCOUNT_TOKEN/g" "$GAME_CONFIGFILE_PATH"
-        sed -i -e "s/###RANDOM###/$RANDOM_NUMBER/g" "$GAME_CONFIGFILE_PATH"
-        sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
-    fi
+    # # only copy dedicatedserver.cfg if doesn't exist
+    # This should be able to be removed, as the server.cfg is now copied from the template
+    # if [[ ! -f "$GAME_CONFIGFILE_PATH" ]]; then
+    #     cp /server.cfg.example "$GAME_CONFIGFILE_PATH"
+    #     sed -i -e "s/###serverSteamAccount###/$SERVER_STEAM_ACCOUNT_TOKEN/g" "$GAME_CONFIGFILE_PATH"
+    #     sed -i -e "s/###RANDOM###/$RANDOM_NUMBER/g" "$GAME_CONFIGFILE_PATH"
+    #     sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
+    # fi
 
     "${STEAMCMD_PATH}"/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit
 }
@@ -80,6 +82,8 @@ function updateServer() {
 }
 
 function startServer() {
+    check_for_default_credentials
+    setup_configs
     isWineinBashRcExistent
     if ! isVirtualScreenRunning; then
         startVirtualScreenAndRebootWine
@@ -107,10 +111,10 @@ function term_handler() {
 # Main process thread
 function startMain() {
     # Check if server is installed, if not try again
-    if [[ ! -f "/theforest/TheForestDedicatedServer.exe" ]]; then
+    if [ ! -f "/theforest/TheForestDedicatedServer.exe" ]; then
         installServer
     fi
-    if [[ ${ALWAYS_UPDATE_ON_START} == true ]]; then
+    if [ "${ALWAYS_UPDATE_ON_START}" == "true" ]; then
         updateServer
     fi
     startServer
@@ -126,9 +130,6 @@ do
     current_time=$(date +%H:%M:%S)
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
-    ei ">>> Listing config options ..."
-    e "> ALWAYS_UPDATE_ON_START is set to: $ALWAYS_UPDATE_ON_START"
-    e "> SERVER_STEAM_ACCOUNT_TOKEN is set to: $SERVER_STEAM_ACCOUNT_TOKEN"
 
     startMain &
     START_MAIN_PID="$!"

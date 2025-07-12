@@ -35,20 +35,26 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GAME_SAVEGAME_PATH="/theforest/saves" \
     GAME_CONFIG_PATH="/theforest/config" \
     GAME_CONFIGFILE_PATH="/theforest/config/config.cfg" \
+    GAME_SETTINGS_FILE="/theforest/config/server.cfg" \
     STEAMCMD_PATH="/home/steam/steamcmd" \
+    THEFOREST_TEMPLATE_FILE="/server.cfg.template" \
     WINEDATA_PATH="/winedata" \
     # Wine/Xvfb-settings
     WINEARCH=win64 \
     WINEPREFIX="/winedata/WINE64" \
     DISPLAY=:1.0 \
     # Container-settings
-    TIMEZONE=Europe/Berlin \
     PUID=1000 \
     PGID=1000 \
+    TIMEZONE=Europe/Berlin \
+    SERVER_SETTINGS_MODE=auto \
     # SteamCMD-settings
     ALWAYS_UPDATE_ON_START=true \
-    # Gameserver-start-settings-overrides
-    SERVER_STEAM_ACCOUNT_TOKEN="" 
+    # Gameserver-start-settings
+    SERVER_STEAM_ACCOUNT_TOKEN= \
+    SERVER_NAME="jammsen-docker-generated-###RANDOM###" \
+    ADMIN_PASSWORD=adminPasswordHere \
+    SERVER_PASSWORD=serverPasswordHere
 
 VOLUME ["${GAME_PATH}"]
 
@@ -57,7 +63,7 @@ EXPOSE 8766/udp 27015/udp 27016/udp
 COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
-COPY --chmod=644 configs/server.cfg.example /
+COPY --chmod=644 configs/server.cfg.template /
 COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \

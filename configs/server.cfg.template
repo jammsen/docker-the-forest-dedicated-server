@@ -11,7 +11,7 @@ serverQueryPort 27016
 serverName jammsen-docker-generated-###RANDOM###
 // Maximum number of players
 serverPlayers 8
-// Enable VAC (Valve Anti-cheat System at the server. Must be set off or on
+// Enable VAC (Valve Anti Cheat) on the server. off by default, uncomment to enable
 enableVAC off
 // Server password. blank means no password
 serverPassword
