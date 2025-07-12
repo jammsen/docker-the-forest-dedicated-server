@@ -79,7 +79,7 @@ jobs:
               echo "$(date '+%H:%M:%S') - Waiting for server to start..."
               sleep 5
             done
-            echo "Server successfully started"
+            echo "CoopSteamManager Initialize"
             printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
             docker logs the-forest-dedicated-server
     

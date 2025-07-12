@@ -34,10 +34,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GAME_PATH="/theforest" \
     GAME_SAVEGAME_PATH="/theforest/saves" \
     GAME_CONFIG_PATH="/theforest/config" \
-    GAME_CONFIGFILE_PATH="/theforest/config/config.cfg" \
-    GAME_SETTINGS_FILE="/theforest/config/server.cfg" \
+    GAME_CONFIGFILE_PATH="/theforest/config/server.cfg" \
     STEAMCMD_PATH="/home/steam/steamcmd" \
-    THEFOREST_TEMPLATE_FILE="/server.cfg.template" \
+    THEFOREST_TEMPLATE_FILE="/server.cfg.example" \
     WINEDATA_PATH="/winedata" \
     # Wine/Xvfb-settings
     WINEARCH=win64 \
@@ -63,7 +62,7 @@ EXPOSE 8766/udp 27015/udp 27016/udp
 COPY --chmod=755 entrypoint.sh /
 COPY --chmod=755 scripts/ /scripts
 COPY --chmod=755 includes/ /includes
-COPY --chmod=644 configs/server.cfg.template /
+COPY --chmod=644 configs/server.cfg.example /
 COPY --chmod=755 gosu-amd64 /usr/local/bin/gosu
 
 RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \

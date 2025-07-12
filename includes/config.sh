@@ -19,33 +19,33 @@ function setup_server_cfg() {
         mkdir -p "${GAME_CONFIG_PATH}/"
     fi
     # Copy default-config, which comes with SteamCMD to gameserver save location
-    ew "> Copying server.cfg.template to ${GAME_SETTINGS_FILE}"
-    cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_SETTINGS_FILE}"
+    ew "> Copying server.cfg.example to ${GAME_CONFIGFILE_PATH}"
+    cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
 
     if [[ -n ${ADMIN_PASSWORD+x} ]]; then
         e_with_counter "serverPasswordAdmin to '$ADMIN_PASSWORD'"
-        sed -E -i "s/^serverPasswordAdmin.*$/serverPasswordAdmin $ADMIN_PASSWORD/" "$GAME_SETTINGS_FILE"
+        sed -E -i "s/^serverPasswordAdmin.*$/serverPasswordAdmin $ADMIN_PASSWORD/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_PASSWORD+x} ]]; then
         e_with_counter "serverPassword to '$SERVER_PASSWORD'"
-        sed -E -i "s/^serverPassword.*$/serverPassword $SERVER_PASSWORD/" "$GAME_SETTINGS_FILE"
+        sed -E -i "s/^serverPassword.*$/serverPassword $SERVER_PASSWORD/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_STEAM_ACCOUNT_TOKEN+x} ]]; then
         e_with_counter "serverSteamAccount to '$SERVER_STEAM_ACCOUNT_TOKEN'"
-        sed -E -i "s/^serverSteamAccount.*$/serverSteamAccount $SERVER_STEAM_ACCOUNT_TOKEN/" "$GAME_SETTINGS_FILE"
+        sed -E -i "s/^serverSteamAccount.*$/serverSteamAccount $SERVER_STEAM_ACCOUNT_TOKEN/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_NAME+x} ]]; then
         e_with_counter "server name to '$SERVER_NAME'"
-        sed -E -i "s/^serverName.*$/serverName $SERVER_NAME/" "$GAME_SETTINGS_FILE"
+        sed -E -i "s/^serverName.*$/serverName $SERVER_NAME/" "$GAME_CONFIGFILE_PATH"
         if [[ "$SERVER_NAME" == *"###RANDOM###"* ]]; then
             RAND_VALUE=$RANDOM
             e "> Found standard template, using random numbers in server name"
-            sed -E -i -e "s/###RANDOM###/$RAND_VALUE/g" "$GAME_SETTINGS_FILE"
+            sed -E -i -e "s/###RANDOM###/$RAND_VALUE/g" "$GAME_CONFIGFILE_PATH"
             e "> Server name is now 'jammsen-docker-generated-$RAND_VALUE'"
         fi
     fi
     es ">>> Finished setting up server.cfg"
-    cat "${GAME_SETTINGS_FILE}"
+    cat "${GAME_CONFIGFILE_PATH}"
 }
 
 function setup_configs() {
