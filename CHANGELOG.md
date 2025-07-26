@@ -2,6 +2,10 @@
 
 [Back to main](README.md#changelog)
 
+## 2025-07-26
+
+- Added more readme and settings for ENV-Based settings @jammsen (#68)
+
 ## 2025-01-26
 
 - Added Healthcheck @jammsen (#65)

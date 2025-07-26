@@ -18,12 +18,13 @@ function setup_server_cfg() {
     if [ ! -d "${GAME_CONFIG_PATH}" ]; then
         mkdir -p "${GAME_CONFIG_PATH}/"
     fi
-    # Copy default-config, which comes with SteamCMD to gameserver save location
-    ew "> Copying server.cfg.template to ${GAME_CONFIGFILE_PATH}"
-    #cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
-    cp "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+    if [ ! -f "${GAME_CONFIGFILE_PATH}" ]; then
+        # Copy default-config, which comes with SteamCMD to gameserver save location
+        ew "> Copying server.cfg.template to ${GAME_CONFIGFILE_PATH}"
+        #cp --no-preserve=ownership "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+        cp "${THEFOREST_TEMPLATE_FILE}" "${GAME_CONFIGFILE_PATH}"
+    fi
     sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
-
     if [[ -n ${ADMIN_PASSWORD+x} ]]; then
         e_with_counter "serverPasswordAdmin to '$ADMIN_PASSWORD'"
         sed -E -i "s/^serverPasswordAdmin\b.*$/serverPasswordAdmin $ADMIN_PASSWORD/" "$GAME_CONFIGFILE_PATH"

@@ -75,8 +75,8 @@ WARNING: If you dont do Step 1 and 2 your server can/will not save!
 2. Insert the Login Token into the environment variable via docker-run or docker-compose (at `SERVER_STEAM_ACCOUNT_TOKEN`)
 3. Go to the directory you want to host your gameserver on your Dockernode
 4. Create a sub-directory called `game`
-5. Download the [docker-compose.yml](docker-compose.yml) or use the following example
-6. Review the file and setup the settings you like
+5. Download the [docker-compose.yml](docker-compose.yml) and the default.env or use the following example
+6. Review the 2 files and setup the settings you like - WARNING: If you dont change the passwords, your server will crash-loop! Its by design, to ensure better security!
 7. Setup Port-Forwarding or NAT for the ports in the Docker-Compose file
 8. Start the container via Docker Compose
 9. (Tip: Extended config settings, which are not covered by Docker Compose, can be setup in the config-file of the server - You can find it at `game/config/config.cfg`)
@@ -90,11 +90,8 @@ services:
     container_name: the-forest-dedicated-server
     image: jammsen/the-forest-dedicated-server:latest
     restart: always
-    environment:
-      PUID: 1000
-      PGID: 1000
-      ALWAYS_UPDATE_ON_START: true
-      SERVER_STEAM_ACCOUNT_TOKEN: YOUR_TOKEN_HERE
+    env_file:
+      - ./default.env
     ports:
       - 8766:8766/udp
       - 27015:27015/udp
