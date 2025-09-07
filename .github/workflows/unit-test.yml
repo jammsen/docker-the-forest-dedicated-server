@@ -26,7 +26,8 @@ jobs:
             docker version
             free -m
             cat /proc/cpuinfo | grep "model name"
-            echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
+            echo "Repository value of TIMEOUT_SECONDS is: ${{ vars.TIMEOUT_SECONDS }}"
+            echo "This should not be set on a PR from a different source!"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,10 +62,17 @@ jobs:
       - name: Wait for server to start
         run: |
             START_TIME=$(date +%s)
-            echo "TIMEOUT_SECONDS: ${{ vars.TIMEOUT_SECONDS }}"
+            TIMEOUT_SECONDS=${{ vars.TIMEOUT_SECONDS || '300' }}
+            echo "TIMEOUT_SECONDS: $TIMEOUT_SECONDS"
 
             # Set the timezone to Germany (Central European Time)
             export TZ=Europe/Berlin
+
+            # Source color functions
+            source ./includes/colors.sh
+
+            # Track last log position to avoid duplicate output
+            LAST_LOG_LINES=0
 
             while ! docker logs the-forest-dedicated-server 2>&1 | grep -q "Game autosave started"; do
               CURRENT_TIME=$(date +%s)
@@ -72,16 +80,30 @@ jobs:
 
               if [ $ELAPSED_TIME -gt ${{ vars.TIMEOUT_SECONDS }} ]; then
                 echo "Timeout reached. Server failed to start within ${{ vars.TIMEOUT_SECONDS }} seconds."
-                printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
+                es "*****Final Container LOGS*****"
                 docker logs the-forest-dedicated-server
                 exit 1
               fi
 
-              echo "$(date '+%H:%M:%S') - Waiting for server to start..."
+              # Show current status with warning color
+              ew ">>> $(date '+%H:%M:%S') - Waiting for server to start... (${ELAPSED_TIME}s elapsed)"
+              
+              # Get current log lines count and show new logs if any
+              CURRENT_LOG_LINES=$(docker logs the-forest-dedicated-server 2>&1 | wc -l)
+              if [ $CURRENT_LOG_LINES -gt $LAST_LOG_LINES ]; then
+                es ">>> Recent container logs"
+                es "╭─────────────────────────────────────────────────────────────────────────────────────────────────────╮"
+                docker logs the-forest-dedicated-server 2>&1 | tail -n +$((LAST_LOG_LINES + 1)) | head -n $((CURRENT_LOG_LINES - LAST_LOG_LINES))
+                es "╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯"
+                LAST_LOG_LINES=$CURRENT_LOG_LINES
+              fi
+              
+              echo "---"
               sleep 5
             done
+
             echo "Game autosave started"
-            printf "\e[0;32m%s\e[0m\n" "*****Container LOGS*****"
+            es "*****Final Container LOGS*****"
             docker logs the-forest-dedicated-server
     
 
