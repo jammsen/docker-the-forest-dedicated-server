@@ -78,8 +78,8 @@ jobs:
               CURRENT_TIME=$(date +%s)
               ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
 
-              if [ $ELAPSED_TIME -gt ${{ vars.TIMEOUT_SECONDS }} ]; then
-                echo "Timeout reached. Server failed to start within ${{ vars.TIMEOUT_SECONDS }} seconds."
+              if [ $ELAPSED_TIME -gt $TIMEOUT_SECONDS ]; then
+                echo "Timeout reached. Server failed to start within $TIMEOUT_SECONDS seconds."
                 es "*****Final Container LOGS*****"
                 docker logs the-forest-dedicated-server
                 exit 1
