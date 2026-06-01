@@ -31,7 +31,7 @@ function setup_server_cfg() {
     fi
     if [[ -n ${SERVER_PASSWORD+x} ]]; then
         e_with_counter "serverPassword to '$SERVER_PASSWORD'"
-        sed -E -i "s/^serverPassword ([^A].*|$)/serverPassword $SERVER_PASSWORD/" "$GAME_CONFIGFILE_PATH"
+        sed -E -i "s/^serverPassword\b.*$/serverPassword $SERVER_PASSWORD/" "$GAME_CONFIGFILE_PATH"
     fi
     if [[ -n ${SERVER_STEAM_ACCOUNT_TOKEN+x} ]]; then
         e_with_counter "serverSteamAccount to '$SERVER_STEAM_ACCOUNT_TOKEN'"
