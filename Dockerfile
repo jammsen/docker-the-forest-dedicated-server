@@ -1,4 +1,4 @@
-# root tag = Debian 13 (trixie), digest pinned 2026-07-04 - update the digest manually when bumping the base image
+# digest pinned 2026-07-04 - update the digest manually when bumping the base image
 FROM cm2network/steamcmd:root@sha256:e6b6b3503bf0e41feafe12dc709c90151afba193e1292cac55d28a7d470b1493 AS wine-base
 
 ENV DEBIAN_FRONTEND=noninteractive \ 

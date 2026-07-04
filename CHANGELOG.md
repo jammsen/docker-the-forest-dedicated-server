@@ -18,7 +18,7 @@
 - Changed the info log color from bright blue to a theme-independent light blue (256-color) for better readability on dark terminals
 - Added SteamCMD self-healing: on failure the servermanager clears SteamCMD's self-update state and retries up to 3 times, fixing the misleading "Steamcmd needs to be online to update" crash-loop caused by corrupt update state persisting in the container
 - Adopted best practices from the Palworld image: base image is now digest-pinned (prevents silent base-image changes like the trixie switch), added build-time smoke tests for gosu and wine, added .dockerignore to keep game files out of the docker build context
-- Installing gosu from the Debian package repository instead of shipping a binary in the repo, like in the Sons-of-the-Forest image
+- Installing gosu from the Debian package repository instead of shipping a binary in the repo, like in the Sons-of-the-Forest image, including unit-tests
 
 ## 2025-07-26
 
