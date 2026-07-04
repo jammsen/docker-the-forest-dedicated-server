@@ -16,7 +16,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 if [[ "${PUID}" -eq 0 ]] || [[ "${PGID}" -eq 0 ]]; then
-    ee ">>> Running SOTF as root is not supported, please fix your PUID and PGID!"
+    ee ">>> Running TF as root is not supported, please fix your PUID and PGID!"
     exit 1
 elif [[ "$(id -u steam)" -ne "${PUID}" ]] || [[ "$(id -g steam)" -ne "${PGID}" ]]; then
     ew "> Current $APP_USER user PUID is '$(id -u steam)' and PGID is '$(id -g steam)'"
