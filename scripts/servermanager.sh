@@ -52,7 +52,27 @@ function setupWineInBashRc() {
 function startVirtualScreenAndRebootWine() {
     # Start X Window Virtual Framebuffer
     Xvfb :1 -screen 0 1024x768x24 &
-    wineboot -r
+    if [[ ${FILTER_SHADER_AND_MESH_AND_WINE_DEBUG} == true ]]; then
+        WINEDEBUG=-all wineboot -r
+    else
+        wineboot -r
+    fi
+}
+
+function runSteamCmd() {
+    local attempt exit_code
+    for attempt in 1 2 3; do
+        "${STEAMCMD_PATH}"/steamcmd.sh "$@"
+        exit_code=$?
+        if [[ ${exit_code} -eq 0 ]]; then
+            return 0
+        fi
+        ew ">>> SteamCMD failed (attempt ${attempt}/3) - clearing SteamCMD update state and retrying"
+        rm -rf "${STEAMCMD_PATH}/package"
+        sleep 5
+    done
+    ee ">>> SteamCMD failed 3 times in a row - giving up, container will restart"
+    exit 1
 }
 
 function installServer() {
@@ -73,13 +93,13 @@ function installServer() {
         # sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$(hostname -I)/g" "$GAME_CONFIGFILE_PATH"
     # fi
 
-    "${STEAMCMD_PATH}"/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit
+    runSteamCmd +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit
 }
 
 function updateServer() {
     # force an update and validation
     ei ">>> Doing an update of the gameserver"
-    "${STEAMCMD_PATH}"/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit
+    runSteamCmd +@sSteamCmdForcePlatformType windows +force_install_dir "$GAME_PATH" +login anonymous +app_update 556450 validate +quit
 }
 
 function startServer() {
@@ -93,13 +113,29 @@ function startServer() {
     rm -f /tmp/.X1-lock 2> /dev/null
     # shellcheck disable=SC2164
     cd "$GAME_PATH"
-    wine64 "$GAME_PATH"/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath "$GAME_SAVEGAME_PATH" -configfilepath "$GAME_CONFIGFILE_PATH"
+
+    if [[ ${FILTER_SHADER_AND_MESH_AND_WINE_DEBUG} == true ]]; then
+        ei ">>> Shader and Mesh warning/error filtering is enabled"
+        # Start the server without output buffering and pipe through grep to filter out shader warnings
+        WINEDEBUG=-all stdbuf -oL -eL wine "$GAME_PATH"/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath "$GAME_SAVEGAME_PATH" -configfilepath "$GAME_CONFIGFILE_PATH" 2>&1 | \
+        stdbuf -oL grep -v -E ".*WARNING: Shader.*|.*ERROR: Shader.*|.*NullReferenceException: Object reference not set to an instance of an object.*|.*at TheForest.Utils.Input.GetAxis.*|.*at UICamera\..*|.*\(Filename:.*|.*Platform assembly:.*|.*Fallback handler could not load library.*|.*JobTempAlloc has allocations.*|.*OnLevelWasLoaded was found on.*|.*This message has been deprecated and will be removed in a later version of Unity.*|.*Add a delegate to SceneManager.sceneLoaded instead.*|^Unloading [0-9]+ .*|^UnloadTime: .*|^Total: .*FindLiveObjects.*|^[[:space:]]*$"
+        # Start the server with output buffering and pipe through grep to filter out shader warnings
+        # If you want to NOT use stdbuf, comment out the above line and uncomment the next lines and build the image yourself
+        #WINEDEBUG=-all wine "$GAME_PATH"/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath "$GAME_SAVEGAME_PATH" -configfilepath "$GAME_CONFIGFILE_PATH" 2>&1 | grep -v -E ".*WARNING: Shader.*|.*ERROR: Shader.*|.*NullReferenceException: Object reference not set to an instance of an object.*|.*at TheForest.Utils.Input.GetAxis.*|.*at UICamera\..*|.*\(Filename:.*|.*Platform assembly:.*|.*Fallback handler could not load library.*|.*JobTempAlloc has allocations.*|.*OnLevelWasLoaded was found on.*|.*This message has been deprecated and will be removed in a later version of Unity.*|.*Add a delegate to SceneManager.sceneLoaded instead.*|^Unloading [0-9]+ .*|^UnloadTime: .*|^Total: .*FindLiveObjects.*|^[[:space:]]*$"
+    else
+        ei ">>> Shader warning filtering is disabled"
+        # Start the server without output buffering and without filtering
+        stdbuf -oL -eL wine "$GAME_PATH"/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath "$GAME_SAVEGAME_PATH" -configfilepath "$GAME_CONFIGFILE_PATH"
+        # Start the server with output buffering and without filtering
+        # If you want to NOT use stdbuf, comment out the above line and uncomment the next line and build the image yourself
+        #wine "$GAME_PATH"/TheForestDedicatedServer.exe -batchmode -dedicated -savefolderpath "$GAME_SAVEGAME_PATH" -configfilepath "$GAME_CONFIGFILE_PATH"
+    fi
 }
 
 function stopServer() {
     ew ">>> Stopping server..."
-	kill -SIGTERM "$(pidof TheForestDedicatedServer.exe)"
-	tail --pid="$(pidof TheForestDedicatedServer.exe)" -f 2>/dev/null
+	kill -SIGTERM "$(pgrep -f '[Z]:.*TheForestDedicatedServer.exe')"
+	tail --pid="$(pgrep -f '[Z]:.*TheForestDedicatedServer.exe')" -f 2>/dev/null
     ew ">>> Server stopped gracefully"
     exit 143;
 }
@@ -131,6 +167,9 @@ do
     current_time=$(date +%H:%M:%S)
     ei ">>> Starting server manager"
     e "> Started at: $current_date $current_time"
+    ei ">>> Listing config options ..."
+    e "> ALWAYS_UPDATE_ON_START is set to: $ALWAYS_UPDATE_ON_START"
+    e "> FILTER_SHADER_AND_MESH_AND_WINE_DEBUG is set to: $FILTER_SHADER_AND_MESH_AND_WINE_DEBUG"
 
     startMain &
     START_MAIN_PID="$!"

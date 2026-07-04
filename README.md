@@ -75,7 +75,7 @@ WARNING: If you dont do Step 1 and 2 your server can/will not save!
 2. Insert the Login Token into the environment variable via docker-run or docker-compose (at `SERVER_STEAM_ACCOUNT_TOKEN`)
 3. Go to the directory you want to host your gameserver on your Dockernode
 4. Create a sub-directory called `game`
-5. Download the [docker-compose.yml](docker-compose.yml) and the default.env or use the following example
+5. Download the [compose.yml](compose.yml) and the default.env or use the following example
 6. Review the 2 files and setup the settings you like - WARNING: If you dont change the passwords, your server will crash-loop! Its by design, to ensure better security!
 7. Setup Port-Forwarding or NAT for the ports in the Docker-Compose file
 8. Start the container via Docker Compose
@@ -84,7 +84,6 @@ WARNING: If you dont do Step 1 and 2 your server can/will not save!
 ### Docker-Compose - Example
 
 ```yaml
-version: "3.9"
 services:
   the-forest-dedicated-server:
     container_name: the-forest-dedicated-server
@@ -100,13 +99,15 @@ services:
       - ./game:/theforest
 ```
 
+> **Note:** The `FILTER_SHADER_AND_MESH_AND_WINE_DEBUG` environment variable (default: true) controls whether Wine debug-logs and known-harmless warning messages (shader warnings, headless input `NullReferenceException` spam) are filtered from the container logs, keeping them cleaner. Set it to false if you want to see all messages.
+
 ## Planned features in the future
 
 - Feel free to suggest features in the issues
 
 ## Software used
 
-- Debian Stable and SteamCMD via cm2network/steamcmd:root image as base-image
+- Debian Trixie and SteamCMD via cm2network/steamcmd:root image as base-image
 - gosu
 - procps
 - winbind

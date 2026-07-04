@@ -6,10 +6,11 @@ current_setting=1
 settings_amount=4
 
 function e_with_counter() {
-    local padded_number
+    local padded_number padded_amount
     padded_number=$(printf "%02d" $current_setting)
+    padded_amount=$(printf "%02d" $settings_amount)
     # shellcheck disable=SC2145
-    e "> ($padded_number/$settings_amount) Setting $@"
+    e "> ($padded_number/$padded_amount) Setting $@"
     current_setting=$((current_setting + 1))
 }
 

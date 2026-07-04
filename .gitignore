@@ -4,5 +4,5 @@ game/
 test/
 steamcmd/
 winedata/
-docker-compose-*.yml
+compose-*.yml
 custom.env
